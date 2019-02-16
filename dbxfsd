@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# if [ "$(id -u)" != 0 ]; then
+#    echo "This script must be run as root" 1>&2
+#    exit 1
+# fi
+
+daemon=$0
+. /etc/rc.d/rc.subr
+
+rc_reload=NO
+
+rc_start() {
+	doas -u root dbxfs $daemon_flags /mnt/Dropbox && touch /tmp/dbxfsd_active
+}
+
+rc_check() {
+	test -e /tmp/dbxfsd_active
+}
+
+rc_stop() {
+	doas -u root umount /mnt/Dropbox && rm /tmp/dbxfsd_active
+}
+
+rc_cmd "$1"
